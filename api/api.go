@@ -1,26 +1,20 @@
-/*
-
-TODO:
-* learn the v3 api
-* save keys to .env
-* way to make calls
-
-*/
-
 package api
 
 import (
-    "github.com/alpacahq/alpaca-trade-api-go/v3/alpaca"
-    "github.com/joho/godotenv"
+	"fmt"
     "os"
+	"github.com/joho/godotenv"
+    "github.com/alpacahq/alpaca-trade-api-go/v3/marketdata"
 )
 
 type Api struct {
-    Endpoint *alpaca.Client
+    // use this to prevent api overloading, 200 calls/min
+    count int
+    client *marketdata.Client
 }
 
 func NewApi() (*Api, error) {
-    err := godotenv.Load("../.env")
+    err := godotenv.Load(".env")
 
     if err != nil {
         return nil, err
@@ -29,17 +23,38 @@ func NewApi() (*Api, error) {
     key := os.Getenv("APIKEY")
     private := os.Getenv("APIPRIVATE")
 
-    ep := alpaca.NewClient(alpaca.ClientOpts{
+    client := marketdata.NewClient(marketdata.ClientOpts{
         APIKey: key,
         APISecret: private,
-        BaseURL: "https://paper-api.alpaca.markets",
     })
 
-    return &Api{ep}, nil
+    return &Api{0, client}, nil
 }
 
-func (l *Api) CheckAccount() error {
-    _, err := l.Endpoint.GetAccount()
+func (self *Api) GetOpeningPrice(stock string) (float32, error) {
+    bar, err := self.client.GetLatestBar("AAPL", marketdata.GetLatestBarRequest{})
 
-    return err
+    if err != nil {
+        fmt.Println(err)
+        return 0.0, err
+    }
+
+    return float32(bar.Open), nil
 }
+
+func (self *Api) GetPrice(stock string) (float32, error) {
+    bar, err := self.client.GetLatestBar("AAPL", marketdata.GetLatestBarRequest{})
+
+    if err != nil {
+        fmt.Println(err)
+        return 0.0, err
+    }
+
+    return float32(bar.VWAP), nil
+}
+
+func (self *Api) GetPrices(stock string, count int) ([]float32, error) {
+    // TODO: apply timelines
+    return []float32 {0}, nil
+}
+

@@ -6,5 +6,16 @@ import (
 )
 
 func main() {
-    fmt.Println(api.GetPrice())
+    x, err := api.NewApi()
+
+    if err != nil {
+        fmt.Println(err)
+        return 
+    }
+
+    if err != nil {
+        fmt.Println("no good")
+        return 
+    }
+
 }
