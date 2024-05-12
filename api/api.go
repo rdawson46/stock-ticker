@@ -9,7 +9,7 @@ import (
 
 type Api struct {
     // use this to prevent api overloading, 200 calls/min
-    count int
+    Count int
     client *marketdata.Client
 }
 
@@ -28,7 +28,7 @@ func NewApi() (*Api, error) {
         APISecret: private,
     })
 
-    return &Api{0, client}, nil
+    return &Api{200, client}, nil
 }
 
 func (self *Api) GetOpeningPrice(stock string) (float32, error) {
