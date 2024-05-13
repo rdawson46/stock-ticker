@@ -50,7 +50,17 @@ func (self *Api) GetPrice(stock string) (float32, error) {
         return 0.0, err
     }
 
+    if self.Count == 0 {
+        return 0.0, err
+    }
+
     return float32(bar.VWAP), nil
+}
+
+// important for when use for multiple stocks added
+func (self *Api) GetLimit(stocks []string, refreshRate int) int {
+    return (60 * 1000) / refreshRate / len(stocks)
+
 }
 
 func (self *Api) GetPrices(stock string, count int) ([]float32, error) {
