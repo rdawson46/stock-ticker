@@ -8,8 +8,6 @@ import (
 )
 
 type Api struct {
-    // use this to prevent api overloading, 200 calls/min
-    Count int
     client *marketdata.Client
 }
 
@@ -28,11 +26,11 @@ func NewApi() (*Api, error) {
         APISecret: private,
     })
 
-    return &Api{200, client}, nil
+    return &Api{client}, nil
 }
 
 func (self *Api) GetOpeningPrice(stock string) (float32, error) {
-    bar, err := self.client.GetLatestBar("AAPL", marketdata.GetLatestBarRequest{})
+    bar, err := self.client.GetLatestBar(stock, marketdata.GetLatestBarRequest{})
 
     if err != nil {
         fmt.Println(err)
@@ -43,24 +41,22 @@ func (self *Api) GetOpeningPrice(stock string) (float32, error) {
 }
 
 func (self *Api) GetPrice(stock string) (float32, error) {
-    bar, err := self.client.GetLatestBar("AAPL", marketdata.GetLatestBarRequest{})
+    bar, err := self.client.GetLatestBar(stock, marketdata.GetLatestBarRequest{})
 
     if err != nil {
         fmt.Println(err)
         return 0.0, err
     }
 
-    if self.Count == 0 {
-        return 0.0, err
-    }
-
     return float32(bar.VWAP), nil
 }
 
+// func for getting lower limit of refresh rate
 // important for when use for multiple stocks added
-func (self *Api) GetLimit(stocks []string, refreshRate int) int {
-    return (60 * 1000) / refreshRate / len(stocks)
-
+//func (self *Api) GetRateLimit(stocks []string, refreshRate int) int {
+func (self *Api) GetRateLimit() float32 {
+    //return (float32(60) / float32(200)) * 1000 / float32(len(stocks))
+    return (float32(60) / float32(200)) * 1000
 }
 
 func (self *Api) GetPrices(stock string, count int) ([]float32, error) {

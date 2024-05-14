@@ -12,12 +12,12 @@ import (
 
 // HACK: have counter to register timerMsg
 type model struct {
-    timer   chan timerMsg
-    stock   string
-    open    float32
-    current float32
-    api     *api.Api
-    counter int
+    timer       chan timerMsg
+    stock       string
+    open        float32
+    current     float32
+    api         *api.Api
+    counter     int
 }
 
 func initialModel() model {
@@ -27,7 +27,7 @@ func initialModel() model {
         os.Exit(1)
     }
 
-    stock := "crox"
+    stock := "CROX"
 
     open, err := api.GetOpeningPrice(stock)
 
@@ -64,7 +64,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
     case timerMsg:
         m.counter++
-        return m, tea.Batch(waitForTimer(m.timer), getPrice(m.api, m.stock))
+        return m, tea.Batch(
+            getPrice(m.api, m.stock),
+            waitForTimer(m.timer),
+        )
 
     case errMsg:
         return m, tea.Quit
@@ -72,6 +75,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     case tea.KeyMsg:
         // TODO: add quit with q
         if msg.Type == tea.KeyCtrlC {
+            return m, tea.Quit
+        }
+
+        switch msg.String() {
+        case "q":
             return m, tea.Quit
         }
     }
@@ -104,7 +112,7 @@ func getPrice(api *api.Api, stock string) tea.Cmd {
 func timer(sub chan timerMsg) tea.Cmd {
     return func() tea.Msg {
         for{
-            time.Sleep(time.Second)
+            time.Sleep(time.Minute)
             sub <- timerMsg(struct{}{})
         }
     }
@@ -115,7 +123,6 @@ func waitForTimer(sub chan timerMsg) tea.Cmd {
         return <-sub
     }
 }
-
 
 func main() {
     p := tea.NewProgram(initialModel(), tea.WithAltScreen())

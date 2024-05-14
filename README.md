@@ -2,8 +2,8 @@
 A stock tick written and Go.
 
 ## Todo
-* Then add UI for one stock
+* work on UI for one stock, improve with lipgloss
+* replicate with tabs and multiple stocks
 * add way to parse a config file 
     * add colors
     * stock preferences 
-* replicate with tabs and multiple stocks
