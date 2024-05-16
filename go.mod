@@ -3,13 +3,17 @@ module github.com/rdawson46/stock-ticker
 go 1.21.9
 
 require (
+	github.com/alpacahq/alpaca-trade-api-go/v3 v3.4.0
+	github.com/charmbracelet/bubbletea v0.26.2
+	github.com/charmbracelet/lipgloss v0.10.0
+	github.com/joho/godotenv v1.5.1
+)
+
+require (
 	cloud.google.com/go v0.113.0 // indirect
-	github.com/alpacahq/alpaca-trade-api-go/v3 v3.4.0 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
-	github.com/charmbracelet/bubbletea v0.26.2 // indirect
-	github.com/charmbracelet/lipgloss v0.10.0 // indirect
 	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/guptarohit/asciigraph v0.7.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect

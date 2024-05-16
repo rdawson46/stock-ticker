@@ -2,9 +2,11 @@ package api
 
 import (
 	"fmt"
-    "os"
+	"os"
+	"time"
+
+	"github.com/alpacahq/alpaca-trade-api-go/v3/marketdata"
 	"github.com/joho/godotenv"
-    "github.com/alpacahq/alpaca-trade-api-go/v3/marketdata"
 )
 
 type Api struct {
@@ -29,7 +31,7 @@ func NewApi() (*Api, error) {
     return &Api{client}, nil
 }
 
-func (self *Api) GetOpeningPrice(stock string) (float32, error) {
+func (self *Api) GetOpeningPrice(stock string) (float64, error) {
     bar, err := self.client.GetLatestBar(stock, marketdata.GetLatestBarRequest{})
 
     if err != nil {
@@ -37,10 +39,10 @@ func (self *Api) GetOpeningPrice(stock string) (float32, error) {
         return 0.0, err
     }
 
-    return float32(bar.Open), nil
+    return float64(bar.Open), nil
 }
 
-func (self *Api) GetPrice(stock string) (float32, error) {
+func (self *Api) GetPrice(stock string) (float64, error) {
     bar, err := self.client.GetLatestBar(stock, marketdata.GetLatestBarRequest{})
 
     if err != nil {
@@ -48,19 +50,35 @@ func (self *Api) GetPrice(stock string) (float32, error) {
         return 0.0, err
     }
 
-    return float32(bar.VWAP), nil
+    return float64(bar.VWAP), nil
 }
 
-// func for getting lower limit of refresh rate
-// important for when use for multiple stocks added
-//func (self *Api) GetRateLimit(stocks []string, refreshRate int) int {
-func (self *Api) GetRateLimit() float32 {
-    //return (float32(60) / float32(200)) * 1000 / float32(len(stocks))
-    return (float32(60) / float32(200)) * 1000
+// TODO: work on this, will be needed with expansion
+func (self *Api) GetRateLimit() float64 {
+    //return (float64(60) / float64(200)) * 1000 / float64(len(stocks))
+    return (float64(60) / float64(200)) * 1000
 }
 
-func (self *Api) GetPrices(stock string, count int) ([]float32, error) {
-    // TODO: apply timelines
-    return []float32 {0}, nil
+func (self *Api) GetLast10(stock string) ([]float64, error){
+    prices, err := self.client.GetBars(stock, marketdata.GetBarsRequest{
+        Start: time.Now().Add(time.Duration(-45) * time.Hour),
+        End: time.Now().Add(time.Duration(-15) * time.Hour),
+        TimeFrame: marketdata.OneMin,
+        TotalLimit: 30,
+    })
+
+    if err != nil {
+        fmt.Println(err)
+        os.Exit(1)
+        return []float64{}, err
+    }
+
+    values := make([]float64, 0)
+
+    for _, val := range prices {
+        values = append(values, val.VWAP)
+    }
+    
+    return values, nil
 }
 
