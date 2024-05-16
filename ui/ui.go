@@ -35,21 +35,33 @@ func tabBorderWithBottom(left, middle, right string) lipgloss.Border {
 var (
     inactiveTabBorder = tabBorderWithBottom("┴", "─", "┴")
     activeTabBorder = tabBorderWithBottom("┘", " ", "└")
-    docStyle = lipgloss.NewStyle().Padding(1, 1, 1, 1)
+    docStyle = lipgloss.NewStyle().Padding(2, 2, 2, 2)
     highlightColor = lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
     inactiveTabStyle = lipgloss.NewStyle().Border(inactiveTabBorder, true).BorderForeground(highlightColor).Padding(0, 2)
     activeTabStyle = inactiveTabStyle.Copy().Border(activeTabBorder, true)
-    windowStyle = lipgloss.NewStyle().BorderForeground(highlightColor).Padding(1, 0).Border(lipgloss.NormalBorder()).UnsetBorderTop()
+    windowStyle = lipgloss.NewStyle().BorderForeground(highlightColor).Padding(1, 2).Border(lipgloss.NormalBorder()).UnsetBorderTop()
 )
 
 func InitialModel() model {
     api, err := api.NewApi()
 
+    config, err := GetConfigs()
+
+    if err != nil {
+        fmt.Println("Couldn't load config")
+        os.Exit(1)
+    }
+
     if err != nil {
         os.Exit(1)
     }
 
-    stockSymbols := []string{"CROX", "AAPL", "VOO"}
+    // stockSymbols := []string{"CROX", "AAPL", "VOO"}
+    stockSymbols := make([]string, len(config.Stocks))
+
+    for i, stock := range config.Stocks {
+        stockSymbols[i] = stock.Name
+    }
 
     stocks := make(map[string][]float64)
     opens := make(map[string]float64)
@@ -150,9 +162,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
     /* TODO: 
      * add style for full window
-         * add border around screen
-     * conditional coloring
-     * graphing, with conditional coloring
+         * fix border around screen
+     * conditional coloring, overall coloring
     */
     doc := strings.Builder{}
 

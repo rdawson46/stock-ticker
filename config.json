@@ -1,0 +1,21 @@
+{
+    "stocks": [
+        {
+            "name":"CROX",
+            "position":1
+        },
+        {
+            "name":"AAPL",
+            "position":1
+        },
+        {
+            "name":"VOO",
+            "position":1
+        },
+        {
+            "name": "goog",
+            "position":1
+        }
+    ],
+    "colors": [1,2,3]
+}

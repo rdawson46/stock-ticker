@@ -8,6 +8,7 @@ import (
 	"github.com/rdawson46/stock-ticker/ui"
 )
 
+
 func main() {
     p := tea.NewProgram(ui.InitialModel(), tea.WithAltScreen())
 
