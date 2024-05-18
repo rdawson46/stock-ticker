@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
+    "github.com/rdawson46/stock-ticker/api"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/rdawson46/stock-ticker/api"
-
 	"github.com/guptarohit/asciigraph"
 )
 
@@ -139,16 +139,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         return m, tea.Quit
          
     case tea.KeyMsg:
-        if msg.Type == tea.KeyCtrlC {
-            return m, tea.Quit
-        }
-
         switch msg.String() {
-        case "q":
+        case "q", "ctrl+c":
             return m, tea.Quit
-        case "n":
+        case "n", "tab":
             m.current = (m.current + 1) % len(m.stockSym)
-        case "p":
+        case "p", "enter":
             if m.current == 0 {
                 m.current = len(m.stockSym) - 1
             } else {
@@ -225,7 +221,6 @@ func (m model) View() string {
     row := lipgloss.JoinHorizontal(lipgloss.Top, renderedStocks...)
     doc.WriteString(row)
     doc.WriteString("\n")
-    //doc.WriteString(windowStyle.Width((lipgloss.Width(row) - windowStyle.GetHorizontalFrameSize())).Render(main_content + g))
     doc.WriteString(windowStyle.Render(main_content + g))
 
     return docStyle.Render(doc.String())
